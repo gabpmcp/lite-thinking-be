@@ -1,1 +1,0 @@
-public interface EmpresaRepository extends ReactiveCrudRepository<Empresa, String> {}

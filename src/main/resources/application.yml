@@ -1,0 +1,16 @@
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/litethinking  # Cambia 'mydatabase' por el nombre de tu BD
+    username: ${DB_USER}                                    # Cambia por tu usuario
+    password: ${DB_PASS}                                # Cambia por tu contraseña
+    pool:
+      enabled: true
+      max-size: 20
+      initial-size: 10
+
+  jpa:
+    defer-datasource-initialization: true  # Desactivar JPA, ya que estamos usando R2DBC
+
+  # Configuración del servidor, si es necesario
+  server:
+    port: 8080  # Cambia el puerto si lo necesitas

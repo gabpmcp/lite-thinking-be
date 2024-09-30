@@ -1,0 +1,30 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres-litethinking
+    environment:
+      POSTGRES_USER: ltuser
+      POSTGRES_PASSWORD: 1234567
+      POSTGRES_DB: litethinking
+    ports:
+      - "5432:5432"
+    networks:
+      - litethinking-network
+
+#  app:
+#    build: .
+#    container_name: litethinking-app
+#    ports:
+#      - "8080:8080"
+#    environment:
+#      SPRING_R2DBC_URL: r2dbc:postgresql://postgres-litethinking:5432/litethinking
+#      SPRING_R2DBC_USERNAME: ltuser
+#      SPRING_R2DBC_PASSWORD: 1234567
+#    depends_on:
+#      - postgres
+#    networks:
+#      - litethinking-network
+
+networks:
+  litethinking-network:
+    driver: bridge

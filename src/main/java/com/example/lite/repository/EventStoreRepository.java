@@ -19,6 +19,7 @@ public interface EventStoreRepository extends ReactiveCrudRepository<EventEntity
     Flux<EventEntity> findByAggregateIdAndVersionGreaterThanOrderByVersion(String aggregateId, int version);
 
     // Devuelve la versión más alta de un agregado
+    @Query("SELECT COALESCE(MAX(version), 0) FROM events WHERE aggregate_id = :aggregateId")
     Mono<Integer> findMaxVersionByAggregateId(String aggregateId);
 
     @Query("INSERT INTO events (id, aggregate_id, event_type, event_data, version, created_at, metadata) " +

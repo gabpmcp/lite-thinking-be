@@ -1,6 +1,6 @@
 CREATE TABLE events (
     id UUID PRIMARY KEY,                     -- ID único para cada evento
-    aggregate_id UUID NOT NULL,              -- ID del agregado (entidad)
+    aggregate_id VARCHAR(255) NOT NULL,              -- ID del agregado (entidad)
     -- aggregate_type VARCHAR(255) NOT NULL,    -- Tipo de agregado (nombre de la entidad)
     event_type VARCHAR(255) NOT NULL,        -- Tipo del evento (nombre del evento)
     event_data JSONB NOT NULL,               -- Datos del evento en formato JSONB

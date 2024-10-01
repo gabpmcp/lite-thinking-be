@@ -42,13 +42,12 @@ public class OrchestratorController {
 
     public Mono<ResponseEntity<Object>> handleValidationResult(Result<Message> result, String aggregateId, Command command) {
         return result instanceof Success<?>
-                ? eventStoreService.getEventsForAggregate(aggregateId)
+                ? eventStoreService.findByAggregateIdOrderByVersion(aggregateId)
                 .collectList()
-                .flatMap(storedEvents -> {
-                    List<Event> events = Decision.decide(command, Projection.project(storedEvents));
-                    return eventStoreService.saveEvents(Flux.fromIterable(events), aggregateId, "")
-                            .thenReturn(ResponseEntity.ok(events));
-                })
+                .flatMap(storedEvents -> eventStoreService.saveEvents(
+                                Flux.fromIterable(Decision.decide(command, Projection.project(storedEvents))), aggregateId, "")
+                        .thenReturn(ResponseEntity.ok(storedEvents))
+                )
                 : Mono.just(ResponseEntity.badRequest().body(result));
     }
 }

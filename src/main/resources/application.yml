@@ -12,11 +12,7 @@ spring:
     url: jdbc:postgresql://localhost:5432/litethinking
     user: ltuser
     password: 1234567
-    locations: classpath:db/migration
-#  datasource:
-#    url: jdbc:postgresql://localhost:5432/litethinking
-#    username: ltuser
-#    password: 1234567
+    locations: classpath:db/migrations
   jpa:
     defer-datasource-initialization: true  # Desactivar JPA, ya que estamos usando R2DBC
 
@@ -25,5 +21,4 @@ server:
   port: 8080  # Cambia el puerto si lo necesitas
 logging:
   level:
-    org.springframework.r2dbc.core: DEBUG
     org.springframework.data.r2dbc: DEBUG

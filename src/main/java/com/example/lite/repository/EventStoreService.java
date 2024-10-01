@@ -2,12 +2,10 @@ package com.example.lite.repository;
 
 import com.example.lite.cqrs.Event;
 import com.example.lite.util.Utils;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -25,13 +23,7 @@ public class EventStoreService {
         this.eventStoreRepository = eventStoreRepository;
     }
 
-    @Transactional
-    public Mono<EventEntity> appendEvent(String aggregateId, String eventType, String eventData, int version, String metadata) {
-        EventEntity event = new EventEntity(aggregateId, eventType, eventData, version, metadata);
-        return eventStoreRepository.save(event); // Método no bloqueante
-    }
-
-    public Flux<Event> getEventsForAggregate(String aggregateId) {
+    public Flux<Event> findByAggregateIdOrderByVersion(String aggregateId) {
         return eventStoreRepository.findByAggregateIdOrderByVersion(aggregateId)
                 .flatMap(entity -> Flux.fromStream(convertEventEntityToEvent(entity).toJavaStream())); // Convertir Option<Event> en Flux
     }
@@ -42,12 +34,7 @@ public class EventStoreService {
                 .toOption(); // Convertir Try a Option: Some si es exitoso, None si hay error
     }
 
-    public Flux<EventEntity> getEventsForAggregateSinceVersion(String aggregateId, int version) {
-        // Reemplaza la lista por un Flux para obtener los eventos de manera no bloqueante
-        return eventStoreRepository.findByAggregateIdAndVersionGreaterThanOrderByVersion(aggregateId, version);
-    }
-
-    // Serializa y guarda una lista de eventos polimórficos, con versión autoincremental y metadata opcional
+    //Serializa y guarda una lista de eventos polimórficos, con versión autoincremental y metadata opcional
     public Mono<List<Event>> saveEvents(Flux<Event> events, String aggregateId, String metadata) {
         return eventStoreRepository.findMaxVersionByAggregateId(aggregateId)
                 .defaultIfEmpty(0)

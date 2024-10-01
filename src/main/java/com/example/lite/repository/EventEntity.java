@@ -6,7 +6,7 @@ import org.springframework.data.relational.core.mapping.Table;
 import java.time.Instant;
 import java.util.UUID;
 
-@Table("event_store") // Mapea el record a la tabla 'event_store'
+@Table("events") // Mapea el record a la tabla 'events'
 public record EventEntity(
         @Id UUID id,
         String aggregateId,

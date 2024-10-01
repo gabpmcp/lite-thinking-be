@@ -6,6 +6,9 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Instant;
+import java.util.UUID;
+
 public interface EventStoreRepository extends ReactiveCrudRepository<EventEntity, String> {
 
     // Devuelve un Flux para representar una secuencia no bloqueante de EventEntity
@@ -17,4 +20,14 @@ public interface EventStoreRepository extends ReactiveCrudRepository<EventEntity
 
     // Devuelve la versión más alta de un agregado
     Mono<Integer> findMaxVersionByAggregateId(String aggregateId);
+
+    @Query("INSERT INTO events (id, aggregate_id, event_type, event_data, version, created_at, metadata) " +
+            "VALUES (:id, :aggregateId, :eventType, CAST(:eventData AS jsonb), :version, :createdAt, CAST(:metadata AS jsonb))")
+    Mono<Void> insertEvent(@Param("id") UUID id,
+                           @Param("aggregateId") String aggregateId,
+                           @Param("eventType") String eventType,
+                           @Param("eventData") String eventData,  // Debe ser un JSON String válido
+                           @Param("version") int version,
+                           @Param("createdAt") Instant createdAt,
+                           @Param("metadata") String metadata);  // Debe ser un JSON String válido
 }

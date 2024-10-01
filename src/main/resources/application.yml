@@ -22,3 +22,6 @@ server:
 logging:
   level:
     org.springframework.data.r2dbc: DEBUG
+    com.github.jasync.sql.db.postgresql: DEBUG
+    org.postgresql: DEBUG
+    io.r2dbc.pool: DEBUG

@@ -1,19 +1,21 @@
 package com.example.lite.repository;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Immutable;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
 import java.util.UUID;
 
 @Table("events") // Mapea el record a la tabla 'events'
+@Immutable
 public record EventEntity(
         @Id UUID id,
         String aggregateId,
         String eventType,
         String eventData,
         int version,
-        Instant timestamp,
+        Instant createdAt,
         String metadata) {
 
     public EventEntity(String aggregateId, String eventType, String eventData, int version, String metadata) {

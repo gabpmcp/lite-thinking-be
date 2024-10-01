@@ -34,8 +34,7 @@ public class OrchestratorController {
 
     @PostMapping("/commands")
     public Mono<ResponseEntity<Object>> orchestrate(@RequestParam("aggregateId") String aggregateId,
-                                                    @RequestBody Command command,
-                                                    Authentication authentication) {
+                                                    @RequestBody Command command) {
         System.out.println(aggregateId + " " + command.toString());
         return Mono.just(command)
                 .flatMap(cmd -> handleValidationResult(validateCommand(cmd), aggregateId, cmd))

@@ -51,7 +51,7 @@ public class EventStoreService {
                                 metadata
                         );
                         // Guardar el EventEntity y devolver el evento original para seguir la composición
-                        return eventStoreRepository.save(eventEntity).thenReturn(event);
+                        return eventStoreRepository.insertEvent(eventEntity.id(), eventEntity.aggregateId(), eventEntity.eventType(), eventEntity.eventData(), eventEntity.version(), eventEntity.createdAt(), "{}").thenReturn(event);
                     });
                 })
                 .collectList(); // Convertir el resultado final en una lista de eventos

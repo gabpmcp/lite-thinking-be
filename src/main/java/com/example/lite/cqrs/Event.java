@@ -64,6 +64,3 @@ record OrderCancelled(Long id) implements Event {
 
 }
 
-record ErrorEvent(String error) implements Event {
-
-}

@@ -3,6 +3,8 @@ package com.example.lite.controller;
 import java.util.List;
 
 import com.example.lite.cqrs.*;
+import org.apache.logging.log4j.util.Strings;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,13 +43,32 @@ public class OrchestratorController {
     }
 
     public Mono<ResponseEntity<Object>> handleValidationResult(Result<Message> result, String aggregateId, Command command) {
-        return result instanceof Success<?>
-                ? eventStoreService.findByAggregateIdOrderByVersion(aggregateId)
-                .collectList()
-                .flatMap(storedEvents -> eventStoreService.saveEvents(
-                                Flux.fromIterable(Decision.decide(command, Projection.project(storedEvents))), aggregateId, "")
-                        .thenReturn(ResponseEntity.ok(storedEvents))
-                )
-                : Mono.just(ResponseEntity.badRequest().body(result));
+        if (result instanceof Success<?>) {
+            return eventStoreService.findByAggregateIdOrderByVersion(aggregateId)
+                    .collectList()
+                    .flatMap(storedEvents -> {
+                        List<Event> decisionEvents = Decision.decide(command, Projection.project(storedEvents));
+
+                        // Filtrar todos los ErrorEvent
+                        List<ErrorEvent> errorEvents = decisionEvents.stream()
+                                .filter(event -> event instanceof ErrorEvent)
+                                .map(event -> (ErrorEvent) event)
+                                .toList();
+
+                        // Si hay errores, devolver la lista de errores
+                        if (!errorEvents.isEmpty()) {
+                            List<String> errorMessages = errorEvents.stream()
+                                    .map(ErrorEvent::error)
+                                    .toList();
+                            return Mono.just(ResponseEntity.status(409).body(errorMessages));
+                        }
+
+                        // Si no hay errores, proceder con la lógica normal
+                        return eventStoreService.saveEvents(Flux.fromIterable(decisionEvents), aggregateId, "")
+                                .thenReturn(ResponseEntity.ok(storedEvents));
+                    });
+        } else {
+            return Mono.just(ResponseEntity.badRequest().body(result));
+        }
     }
 }

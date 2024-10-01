@@ -18,73 +18,61 @@ public class Decision {
             case RegisterCompany cmd -> {
                 if (getOrDefault(state, "companies", new ArrayList<Company>())
                         .stream().anyMatch(c -> c.nit().equals(cmd.nit()))) {
-                    throw new IllegalArgumentException("Company with this NIT already exists.");
+                    yield List.of(new ErrorEvent("Company with this NIT already exists."));
                 }
-                yield new ArrayList<>() {{
-                    add(new CompanyRegistered(cmd.nit(), cmd.name(), cmd.address(), cmd.phone()));
-                }};
+                yield List.of(new CompanyRegistered(cmd.nit(), cmd.name(), cmd.address(), cmd.phone()));
             }
             case UpdateCompany cmd -> {
                 if (getOrDefault(state, "companies", new ArrayList<Company>())
                         .stream().noneMatch(c -> c.nit().equals(cmd.nit()))) {
-                    throw new IllegalArgumentException("Company with this NIT does not exist.");
+                    yield List.of(new ErrorEvent("Company with this NIT does not exist."));
                 }
-                yield new ArrayList<Event>() {{ add(new CompanyUpdated(cmd.nit(), cmd.name(), cmd.address(), cmd.phone())); }};
+                yield List.of(new CompanyUpdated(cmd.nit(), cmd.name(), cmd.address(), cmd.phone()));
             }
             case DeleteCompany cmd -> {
                 if (getOrDefault(state, "companies", new ArrayList<Company>())
                         .stream().noneMatch(c -> c.nit().equals(cmd.nit()))) {
-                    throw new IllegalArgumentException("Company with this NIT does not exist.");
+                    yield List.of(new ErrorEvent("Company with this NIT does not exist."));
                 }
-                yield new ArrayList<Event>() {{ add(new CompanyDeleted(cmd.nit())); }};
+                yield List.of(new CompanyDeleted(cmd.nit()));
             }
             case AddProduct cmd -> {
                 if (getOrDefault(state, "companies", new ArrayList<Company>())
                         .stream().noneMatch(c -> c.nit().equals(cmd.companyId()))) {
-                    throw new IllegalArgumentException("Company does not exist.");
+                    yield List.of(new ErrorEvent("Company does not exist."));
                 }
-                yield new ArrayList<Event>() {{ add(new ProductAdded(cmd.code(), cmd.name(), cmd.characteristics(), cmd.prices(), cmd.companyId())); }};
+                yield List.of(new ProductAdded(cmd.code(), cmd.name(), cmd.characteristics(), cmd.prices(), cmd.companyId()));
             }
             case UpdateProduct cmd -> {
-                if ((getOrDefault(state, "products", new ArrayList<Product>()))
+                if (getOrDefault(state, "products", new ArrayList<Product>())
                         .stream().noneMatch(p -> p.code().equals(cmd.code()))) {
-                    throw new IllegalArgumentException("Product does not exist.");
+                    yield List.of(new ErrorEvent("Product does not exist."));
                 }
-                yield new ArrayList<>() {{
-                    add(new ProductUpdated(cmd.code(), cmd.name(), cmd.characteristics(), cmd.prices(), cmd.companyId()));
-                }};
+                yield List.of(new ProductUpdated(cmd.code(), cmd.name(), cmd.characteristics(), cmd.prices(), cmd.companyId()));
             }
             case RemoveProduct cmd -> {
-                if ((getOrDefault(state, "products", new ArrayList<Product>()))
+                if (getOrDefault(state, "products", new ArrayList<Product>())
                         .stream().noneMatch(p -> p.code().equals(cmd.code()))) {
-                    throw new IllegalArgumentException("Product does not exist.");
+                    yield List.of(new ErrorEvent("Product does not exist."));
                 }
-                yield new ArrayList<>() {{
-                    add(new ProductRemoved(cmd.code()));
-                }};
+                yield List.of(new ProductRemoved(cmd.code()));
             }
-            case CreateOrder cmd -> new ArrayList<>() {{
-                add(new OrderCreated(cmd.id(), cmd.clientId(), cmd.products()));
-            }};
+            case CreateOrder cmd -> List.of(new OrderCreated(cmd.id(), cmd.clientId(), cmd.products()));
             case UpdateOrder cmd -> {
-                if ((getOrDefault(state, "orders", new ArrayList<Order>()))
+                if (getOrDefault(state, "orders", new ArrayList<Order>())
                         .stream().noneMatch(o -> o.id().equals(cmd.id()))) {
-                    throw new IllegalArgumentException("Order does not exist.");
+                    yield List.of(new ErrorEvent("Order does not exist."));
                 }
-                yield new ArrayList<>() {{
-                    add(new OrderUpdated(cmd.id(), cmd.products()));
-                }};
+                yield List.of(new OrderUpdated(cmd.id(), cmd.products()));
             }
             case CancelOrder cmd -> {
-                if ((getOrDefault(state, "orders", new ArrayList<Order>()))
+                if (getOrDefault(state, "orders", new ArrayList<Order>())
                         .stream().noneMatch(o -> o.id().equals(cmd.id()))) {
-                    throw new IllegalArgumentException("Order does not exist.");
+                    yield List.of(new ErrorEvent("Order does not exist."));
                 }
-                yield new ArrayList<>() {{
-                    add(new OrderCancelled(cmd.id()));
-                }};
+                yield List.of(new OrderCancelled(cmd.id()));
             }
-            default -> throw new IllegalArgumentException("Unknown command.");
+            default -> List.of(new ErrorEvent("Unknown command."));
         };
     }
 }

@@ -24,6 +24,21 @@ repositories {
 }
 
 dependencies {
+	// Amazon SDK para Amazon SES (correo electrónico)
+	implementation 'com.amazonaws:aws-java-sdk-ses:1.12.772'  // Amazon SES SDK
+
+	// Para la generación de PDFs
+	implementation 'com.itextpdf:itext-core:8.0.5'
+
+	// JavaMail API para enviar correos electrónicos con archivos adjuntos
+	implementation 'com.sun.mail:jakarta.mail:2.0.1'
+	implementation 'org.eclipse.angus:angus-activation:2.0.2'
+
+
+	// (Ya agregada) Para la autenticación de correos con AWS SES y el manejo de mails
+	implementation 'com.amazonaws:aws-java-sdk:1.12.772'
+
+	// Otras dependencias ya existentes en tu proyecto:
 	implementation 'io.vavr:vavr:0.10.3'
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
 
@@ -34,31 +49,25 @@ dependencies {
 
 	// R2DBC dependencies
 	implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
-	implementation 'org.postgresql:r2dbc-postgresql:1.0.5.RELEASE'  // R2DBC para PostgreSQL
+	implementation 'org.postgresql:r2dbc-postgresql:1.0.5.RELEASE'
 
 	// JDBC dependencies for Flyway
-	implementation 'org.postgresql:postgresql:42.7.4'  // Driver JDBC para PostgreSQL (necesario para Flyway)
+	implementation 'org.postgresql:postgresql:42.7.4'
 	runtimeOnly 'org.flywaydb:flyway-database-postgresql:10.18.2'
 
 	// Otros componentes necesarios
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'com.amazonaws:aws-java-sdk:1.12.772'
-	implementation 'com.sun.mail:jakarta.mail:2.0.1'
-	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
 	implementation 'io.github.cdimascio:java-dotenv:5.2.2'
-	implementation 'org.flywaydb:flyway-core:10.18.2'
 
 	// Dependencias para JSON Web Tokens (JWT)
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
-	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'  // para usar Jackson como serializador
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
 	// Lombok para evitar código boilerplate
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-
-	// Para la generación de PDFs
-	implementation 'com.itextpdf:itext7-core:7.2.3'
 
 	// Dependencias para pruebas
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

@@ -1,14 +1,12 @@
 package com.example.lite.controller;
 
 import com.example.lite.service.EventPdfService;
+import jakarta.mail.MessagingException;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -28,5 +26,18 @@ public class DownloadsController {
                         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=events.pdf")
                         .contentType(MediaType.APPLICATION_PDF)
                         .body(new InputStreamResource(pdfStream)));
+    }
+
+    @PostMapping("/send-pdf")
+    public Mono<ResponseEntity<String>> sendPdfByEmail(@RequestParam("aggregateId") String aggregateId, @RequestParam("email") String email) {
+        return eventPdfService.generatePdf(aggregateId)
+                .flatMap(pdfStream -> {
+                    try {
+                        eventPdfService.sendPdfByEmail(email, pdfStream);
+                        return Mono.just(ResponseEntity.ok("PDF sent to " + email));
+                    } catch (Exception e) {
+                        return Mono.just(ResponseEntity.status(500).body("Failed to send PDF: " + e.getMessage()));
+                    }
+                });
     }
 }

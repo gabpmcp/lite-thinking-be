@@ -46,7 +46,8 @@ public class SecurityConfig {
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         return http.cors(Customizer.withDefaults())  // Nueva forma de habilitar CORS
                 .authorizeExchange(exchange -> exchange
-                        .pathMatchers("/orchestrator").authenticated() // Requiere autenticación
+                        .pathMatchers("/orchestrator/**").authenticated() // Requiere autenticación
+                        .pathMatchers("/projections/**").authenticated()
                         .anyExchange().permitAll()
                 )
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)

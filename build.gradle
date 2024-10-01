@@ -57,6 +57,9 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
+	// Para la generación de PDFs
+	implementation 'com.itextpdf:itext7-core:7.2.3'
+
 	// Dependencias para pruebas
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'

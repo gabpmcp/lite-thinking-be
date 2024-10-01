@@ -1,6 +1,8 @@
-package com.example.lite.repository;
+package com.example.lite.service;
 
 import com.example.lite.cqrs.Event;
+import com.example.lite.repository.EventEntity;
+import com.example.lite.repository.EventStoreRepository;
 import com.example.lite.util.Utils;
 
 import io.vavr.control.Option;

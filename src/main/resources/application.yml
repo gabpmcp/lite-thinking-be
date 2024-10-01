@@ -9,9 +9,9 @@ spring:
       initial-size: 10
   flyway:
     enabled: true
-    url: jdbc:postgresql://localhost:5432/litethinking
-    user: ltuser
-    password: 1234567
+    url: ${DB_URL}
+    user: ${DB_USER}
+    password: ${DB_PASS}
     locations: classpath:db/migrations
   jpa:
     defer-datasource-initialization: true  # Desactivar JPA, ya que estamos usando R2DBC

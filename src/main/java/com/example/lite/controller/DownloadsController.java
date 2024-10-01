@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/projections")
 public class DownloadsController {
@@ -29,11 +31,11 @@ public class DownloadsController {
     }
 
     @PostMapping("/send-pdf")
-    public Mono<ResponseEntity<String>> sendPdfByEmail(@RequestParam("aggregateId") String aggregateId, @RequestParam("email") String email) {
+    public Mono<ResponseEntity<String>> sendPdfByEmail(@RequestParam("aggregateId") String aggregateId, @RequestBody Map<String, String> email) {
         return eventPdfService.generatePdf(aggregateId)
                 .flatMap(pdfStream -> {
                     try {
-                        eventPdfService.sendPdfByEmail(email, pdfStream);
+                        eventPdfService.sendPdfByEmail(email.getOrDefault("email", ""), pdfStream);
                         return Mono.just(ResponseEntity.ok("PDF sent to " + email));
                     } catch (Exception e) {
                         return Mono.just(ResponseEntity.status(500).body("Failed to send PDF: " + e.getMessage()));

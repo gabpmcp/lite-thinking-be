@@ -5,6 +5,7 @@ import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Paragraph;
+import jakarta.mail.*;
 import jakarta.mail.util.ByteArrayDataSource;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -13,17 +14,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-import jakarta.mail.Message;
-import jakarta.mail.MessagingException;
-import jakarta.mail.Session;
-import jakarta.mail.Transport;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
 import jakarta.activation.DataHandler;
 import jakarta.activation.DataSource;
-import jakarta.mail.Multipart;
+
 import java.io.ByteArrayInputStream;
 import java.util.Properties;
 
@@ -60,14 +57,22 @@ public class EventPdfService {
 
     // Enviar PDF por correo utilizando Amazon SES
     public void sendPdfByEmail(String recipientEmail, ByteArrayInputStream pdfStream) throws MessagingException, IOException {
-        String senderEmail = "your-sender-email@example.com";  // Cambia esto por tu correo verificado en SES
+        String senderEmail = "gabrielalejandrobernalperez@gmail.com";  // Cambia esto por tu correo verificado en SES
 
         // Crear sesión de correo
         Properties props = new Properties();
-        props.put("mail.transport.protocol", "smtp");
-        props.put("mail.smtp.port", 587);
+        props.put("mail.smtp.host", System.getProperty("SMTP_HOST", "")); // Cambia por tu región
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.port", System.getProperty("SMTP_PORT", ""));
 
-        Session session = Session.getDefaultInstance(props);
+        Authenticator auth = new Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(System.getProperty("SMTP_USER_NAME", ""), System.getProperty("SMTP_PASSWORD", "")); // Reemplaza con tus credenciales SMTP de SES
+            }
+        };
+
+        Session session = Session.getInstance(props, auth);
 
         // Crear mensaje
         MimeMessage message = new MimeMessage(session);
